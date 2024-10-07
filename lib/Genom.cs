@@ -25,12 +25,12 @@ public class Genom
         }
     }
 
-    public int CalculateGenomScore(int[][] CityMap)
+    public int CalculateGenomWayLenght(int[][] CityMap)
     {
-        GenomScore = 0;
-        for (int i = 0; i < cityNumberConections.Length; i++)
+        GenomScore = CityMap[0][cityNumberConections[0]];
+        for (int i = 1; i < cityNumberConections.Length; i++)
         {
-            GenomScore += CityMap[i][cityNumberConections[i]];
+            GenomScore += CityMap[cityNumberConections[i-1]][cityNumberConections[i]];
         }
         return GenomScore;
     }

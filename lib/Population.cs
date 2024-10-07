@@ -28,12 +28,12 @@ public class Population
         WayLengMap = cityMap;
     }
 
-    public int CalculateSolutionsScore()
+    public int CalculateSolutionsLenght()
     {
         genomsresult.Clear();
         foreach (Genom gen in genArray)
         {
-            genomsresult.Add(gen.CalculateGenomScore(WayLengMap));
+            genomsresult.Add(gen.CalculateGenomWayLenght(WayLengMap));
         }
 
         return genomsresult.Min();
@@ -67,7 +67,7 @@ public class Population
 
     public void StartPopulationEvolution()
     {
-        resultsolution = this.CalculateSolutionsScore();
+        resultsolution = this.CalculateSolutionsLenght();
         bool loop = false;
         Console.CancelKeyPress += (sender, e) =>
         {
@@ -104,7 +104,7 @@ public class Population
     private void CreateNewGenom()
     {
         genArray[genomsresult.IndexOf(genomsresult.Max())] = new Genom(WayLengMap.Length);
-        this.CalculateSolutionsScore();
+        this.CalculateSolutionsLenght();
     }
 
     private void MutateRandomGen()
