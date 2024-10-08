@@ -27,12 +27,13 @@ public class Genom
 
     public int CalculateGenomWayLenght(int[][] CityMap)
     {
-        GenomScore = CityMap[0][cityNumberConections[0]];
+        int GenomScoreInFunc = CityMap[0][cityNumberConections[0]];
         for (int i = 1; i < cityNumberConections.Length; i++)
         {
-            GenomScore += CityMap[cityNumberConections[i-1]][cityNumberConections[i]];
+            GenomScoreInFunc += CityMap[cityNumberConections[i-1]][cityNumberConections[i]];
         }
-        return GenomScore;
+        GenomScore = GenomScoreInFunc;
+        return GenomScoreInFunc;
     }
 
     public void GenomMutation()
