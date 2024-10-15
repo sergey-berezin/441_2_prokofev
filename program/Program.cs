@@ -13,7 +13,7 @@ internal class main
 {
     static void Main(string[] args)
     {
-        int sizeMatrix = 10;
+        int sizeMatrix = 15;
 
         int[][] testmap = GenMatrixCity(sizeMatrix);
 
@@ -25,9 +25,8 @@ internal class main
             }
             Console.WriteLine();
         }
-
-        Population testpopulation = new Population(4, testmap, 2);
-        testpopulation.StartPopulationEvolution();
+        MultiPopulationWork MP = new MultiPopulationWork(2, 8, testmap, 4);
+        MP.Run();
     }
     public static int[][] GenMatrixCity(int size)
     {
