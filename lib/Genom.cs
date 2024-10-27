@@ -5,6 +5,12 @@ public class Genom
     public int[] cityNumberConections { get; set; }
     public int GenomScore { get; set; }
 
+    public Genom(int GenomScore, int[] cityNumberConections)
+    {
+        this.GenomScore = GenomScore;
+        this.cityNumberConections = new int[cityNumberConections.Length];
+        cityNumberConections.CopyTo(this.cityNumberConections, 0);
+    }
     public Genom(int len_genom)
     {
         cityNumberConections = new int[len_genom];
@@ -53,5 +59,9 @@ public class Genom
     public override string ToString()
     {
         return "0->" + string.Join("->", cityNumberConections);
+    }
+    public Genom ClonePopulation()
+    {
+        return new Genom(GenomScore, cityNumberConections);
     }
 }
