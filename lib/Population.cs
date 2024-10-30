@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using OxyPlot;
 namespace lib;
 
 public class Population
 {
+    private static object lockObject = new object();
     public int numEpoch { get; set; }
     public Genom[] genArray { get; set; }
     public Genom bestGen { get; set; }
@@ -69,7 +69,6 @@ public class Population
         {
             this.MutateRandomGen();
         }
-        this.CalculateSolutionsLenght();
         numEpoch += 1;
         return numEpoch;
 
@@ -80,33 +79,36 @@ public class Population
         return $"population number {numPopulation}: Epoch: {numEpoch}, best result is: {this.resultsolution} at genom\n {this.bestGen}\n";
     }
 
-    public void StartPopulationEvolution(ref Genom outputGenom, ref bool allstop, PlotMC plot)
+    public void StartPopulationEvolution(Action<Genom> callback, CancellationToken token)
     {
-        this.CalculateSolutionsLenght();
+        Debug.WriteLine($"start {numPopulation}");
+        int ind_best_gen = this.CalculateSolutionsLenght();
         resultsolution = this.genomsresult.Min();
+        bestGen = genArray[ind_best_gen].ClonePopulation();
         Console.WriteLine(this.GetEpochResult());
+        Debug.WriteLine($"work full start {numPopulation}");
         while (true)
         {
-            if (!allstop)
+            if (token.IsCancellationRequested)
             {
-                Console.WriteLine("ALL STOPED");
+                Debug.WriteLine("DEAD");
                 break;
             }
+
             this.GenNewEpoch();
-            //if(resultsolution > this.genomsresult.Min())
-            //{
-            //    resultsolution = this.genomsresult.Min();
-            //}
-            if (outputGenom.CalculateGenomWayLenght(WayLengMap) > this.genomsresult.Min())
+            ind_best_gen = this.CalculateSolutionsLenght();
+            if (resultsolution > this.genomsresult.Min())
             {
+                lock (lockObject)
+                {
+                    Debug.WriteLine("LOCK");
+                    callback(genArray[ind_best_gen]);
+                }
                 resultsolution = this.genomsresult.Min();
-                outputGenom = this.genArray[genomsresult.IndexOf(resultsolution)].ClonePopulation();
+                bestGen = genArray[ind_best_gen].ClonePopulation();
                 Debug.WriteLine(this.GetEpochResult());
-                plot.PlotNewDrow(outputGenom.cityNumberConections);
             }
         }
-        allstop = false;
-        Debug.WriteLine(this.GetEpochResult());
     }
     public override string ToString()
     {

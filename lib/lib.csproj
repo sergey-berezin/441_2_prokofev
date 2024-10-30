@@ -9,8 +9,4 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OxyPlot.Core" Version="2.2.0" />
-  </ItemGroup>
-
 </Project>

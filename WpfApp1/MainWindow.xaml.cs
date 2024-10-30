@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,6 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using lib;
 using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Wpf;
 namespace WpfApp1
@@ -21,14 +24,15 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        public bool RunFlag = true;
+        CancellationTokenSource cancelTokenSource;
+        Genom genom_rez;
         public MainWindow()
         {
             InitializeComponent();
         }
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            RunFlag = true;
+            cancelTokenSource = new CancellationTokenSource();
             int count_population, count_city, lr, count_threads = 0;
             count_population = Convert.ToInt32(TextBox1.Text);
             count_city = Convert.ToInt32(TextBox2.Text);
@@ -37,30 +41,71 @@ namespace WpfApp1
 
             int[][] city_map_gen = GenMatrixCity(count_city);
 
-            Genom genom_rez = new Genom(count_city);
+            genom_rez = new Genom(count_city);
             PlotMC plot_cl = new PlotMC(count_city, genom_rez.cityNumberConections);
             plot.Model = plot_cl.plot;
-            //RunMulti(count_threads, genom_rez, count_population, city_map_gen, lr, plot_cl);
-        }
 
-        public Genom RunMulti(int count_thread, Genom bestgen, int count_population, int[][] WayLengMap, int lr, PlotMC plot)
+            string string_value_data = "-----";
+            PlotModel plot_v = new PlotModel { Title = "Graph" };
+            plot_values.Model = plot_v;
+            InfoTextBlock.Text = string_value_data;
+            Task.Run(async () =>
+            {
+                RunMulti(count_threads, count_population, city_map_gen, lr, plot_cl, plot_v);
+            }, cancelTokenSource.Token);
+
+        }
+        public Genom RunMulti(int count_thread, int count_population, int[][] WayLengMap, int lr, PlotMC plot, PlotModel plot_v)
         {
-            bestgen.CalculateGenomWayLenght(WayLengMap);
-            Parallel.For(0, count_thread, i =>
+            plot_v.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Title = "Time" });
+            plot_v.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Title = "Value" });
+
+            List<DataPoint> dataPoints = new List<DataPoint>();
+            dataPoints.Add(new DataPoint(0, 0));
+            LineSeries lineSeries = new LineSeries();
+
+            plot_v.Series.Add(lineSeries);
+            int i = 0;
+
+            genom_rez.CalculateGenomWayLenght(WayLengMap);
+            List<Population> list_population = new List<Population>();
+            Action<Genom> callback = (genom_inp) =>
+            {
+                if (genom_inp.GenomScore < genom_rez.GenomScore)
+                {
+                    genom_rez = genom_inp.ClonePopulation();
+                    plot.PlotNewDrow(genom_inp.cityNumberConections);
+                    dataPoints.Add(new DataPoint(i, genom_rez.GenomScore));
+                    lineSeries.Points.Clear();
+                    lineSeries.Points.AddRange(dataPoints);
+                    plot_v.InvalidatePlot(true);
+                    Dispatcher.Invoke(() =>
+                    {
+                        InfoTextBlock.Text = $"{genom_rez.GenomScore}";
+                    });
+                    i++;
+                }
+            };
+
+
+            Parallel.For(0, count_thread, (i, state) =>
             {
                 Debug.WriteLine("START PODBOR");
                 Population tm = new Population(count_population, WayLengMap, lr, i);
-                tm.StartPopulationEvolution(ref bestgen, ref RunFlag, plot);
+                list_population.Add(tm);
+                tm.StartPopulationEvolution(callback, cancelTokenSource.Token);
             });
             Console.WriteLine("FIN");
-            Console.WriteLine(bestgen.GenomScore);
-            return bestgen;
+            Console.WriteLine(genom_rez.GenomScore);
+            return genom_rez;
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            RunFlag = false;
-            Debug.WriteLine($"Stop button: {RunFlag}");
+            cancelTokenSource.Cancel();
+            MessageBox.Show($"Fin rezult: {genom_rez.GenomScore}\n" +
+                $"Genome way:\n" +
+                $"{genom_rez.ToString()}");
         }
 
         public static int[][] GenMatrixCity(int size)
