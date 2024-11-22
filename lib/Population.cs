@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 namespace lib;
+using Newtonsoft.Json;
 
 public class Population
 {
+    private ManualResetEventSlim pauseEvent = new ManualResetEventSlim(true);
     private static object lockObject = new object();
     public int numEpoch { get; set; }
     public Genom[] genArray { get; set; }
@@ -41,6 +43,20 @@ public class Population
         }
         bestGen = genArray[this.CalculateSolutionsLenght()];
         this.numPopulation = numPopulation;
+    }
+
+    [JsonConstructor]
+    public Population(int numEpoch, Genom[] genArray, Genom bestGen, List<int> genomsresult, int[][] WayLengMap, int resultsolution, int learningRate, int numPopulation, bool loop)
+    {
+        this.numEpoch = numEpoch;
+        this.genArray = genArray;
+        this.bestGen = bestGen;
+        this.genomsresult = genomsresult;
+        this.WayLengMap = WayLengMap;
+        this.resultsolution = resultsolution;
+        this.learningRate = learningRate;
+        this.numPopulation = numPopulation;
+        this.loop = loop;
     }
 
     public int CalculateSolutionsLenght()
@@ -81,6 +97,7 @@ public class Population
 
     public void StartPopulationEvolution(Action<Genom> callback, CancellationToken token)
     {
+
         Debug.WriteLine($"start {numPopulation}");
         int ind_best_gen = this.CalculateSolutionsLenght();
         resultsolution = this.genomsresult.Min();
@@ -89,6 +106,7 @@ public class Population
         Debug.WriteLine($"work full start {numPopulation}");
         while (true)
         {
+            pauseEvent.Wait();
             if (token.IsCancellationRequested)
             {
                 Debug.WriteLine("DEAD");
@@ -129,5 +147,17 @@ public class Population
     private void MutateRandomGen()
     {
         genArray[new Random().Next(0, genArray.Length)].GenomMutation();
+    }
+    public void Pause()
+    {
+        if(pauseEvent.IsSet)
+        {
+            pauseEvent.Reset();
+        }    
+    }
+
+    public void Resume()
+    {
+        pauseEvent.Set();
     }
 }
