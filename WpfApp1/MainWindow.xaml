@@ -8,23 +8,35 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Margin="0,0,0,-6" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment">
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,15,0,0" Height="250" Width="144">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,20,0,0" Height="250" Width="144">
             <Label Content="count_population:" />
-            <TextBox x:Name="TextBox1" InputScope="Number"/>
+            <TextBox x:Name="TextBox1" Text="{Binding CountPopulation, UpdateSourceTrigger=PropertyChanged}" InputScope="Number"/>
             <Label Content="count_city:" />
-            <TextBox x:Name="TextBox2" InputScope="Number"/>
+            <TextBox x:Name="TextBox2" Text="{Binding CountCity, UpdateSourceTrigger=PropertyChanged}" InputScope="Number"/>
             <Label Content="lr:" />
-            <TextBox x:Name="TextBox3" InputScope="Number"/>
+            <TextBox x:Name="TextBox3" Text="{Binding Lr, UpdateSourceTrigger=PropertyChanged}" InputScope="Number"/>
             <Label Content="count_threads:" />
-            <TextBox x:Name="TextBox4" InputScope="Number"/>
+            <TextBox x:Name="TextBox4" Text="{Binding CountThreads, UpdateSourceTrigger=PropertyChanged}" InputScope="Number"/>
             <Button x:Name="SubmitButton" Content="Submit" Click="SubmitButton_Click" Margin="0,10,0,0"/>
             <Button x:Name="StopButton" Content="Stop" Click="StopButton_Click"/>
         </StackPanel>
         <oxy:PlotView x:Name="plot" Margin="208,10,0,10" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment"/>
         <oxy:PlotView x:Name="plot_values" Padding="40,10,40,40" Margin="0,260,0,0" Height="170" Width="203" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,0,0,0" Height="87" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,15,0,0" Height="87" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment">
             <Label Content="info now:"/>
             <TextBlock x:Name="InfoTextBlock" HorizontalAlignment="Center" Width="91" Height="38" FontSize ="30"/>
         </StackPanel>
+        <Menu Height="15" VerticalAlignment="Top">
+            <MenuItem Header="Work">
+                <MenuItem Header="Pause" Click="Pause_all"/>
+                <Separator />
+                <MenuItem Header="Resume" Click="Resume_all"/>
+            </MenuItem>
+            <MenuItem Header="File">
+                <MenuItem x:Name="Save" Header="Save" Click="Save_json"/>
+                <Separator />
+                <MenuItem Header="Load" Click="Load_json"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
