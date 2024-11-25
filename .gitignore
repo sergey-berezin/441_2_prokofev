@@ -163,6 +163,7 @@ _NCrunch*
 .vs/Lab1/v17/DocumentLayout.json
 .vs/ProjectEvaluation/lab1.metadata.v9.bin
 .vs/ProjectEvaluation/lab1.projects.v9.bin
+<<<<<<< HEAD
 .vs/ProjectSettings.json
 .vs/slnx.sqlite
 .vs/VSWorkspaceState.json
@@ -180,3 +181,5 @@ _NCrunch*
 .vs/ProjectEvaluation/lab1.strings.v9.bin
 lib/PlotMC.cs
 .gitignore
+=======
+>>>>>>> 382d02ab4ab0d1d8964ad4515b6b970ab5b64059
