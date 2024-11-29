@@ -1,4 +1,5 @@
 namespace lib;
+using Newtonsoft.Json;
 
 public class Genom
 {
@@ -11,6 +12,14 @@ public class Genom
         this.cityNumberConections = new int[cityNumberConections.Length];
         cityNumberConections.CopyTo(this.cityNumberConections, 0);
     }
+<<<<<<< HEAD
+=======
+    [JsonConstructor]
+    public Genom(int[] cityNumberConections)
+    {
+        this.cityNumberConections = cityNumberConections;
+    }
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
     public Genom(int len_genom)
     {
         cityNumberConections = new int[len_genom];

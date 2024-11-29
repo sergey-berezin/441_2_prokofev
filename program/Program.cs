@@ -13,7 +13,11 @@ internal class main
 {
     static void Main(string[] args)
     {
+<<<<<<< HEAD
+        int sizeMatrix = 15;
+=======
         int sizeMatrix = 100;
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
 
         int[][] testmap = GenMatrixCity(sizeMatrix);
 
@@ -25,9 +29,14 @@ internal class main
             }
             Console.WriteLine();
         }
+<<<<<<< HEAD
+        MultiPopulationWork MP = new MultiPopulationWork(2, 8, testmap, 4);
+        MP.Run();
+=======
         //MultiPopulationWork MP = new MultiPopulationWork(2, 8, testmap, 4);
         //MP.Run();
         Population population = new Population(5, testmap, 3);
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
     }
     public static int[][] GenMatrixCity(int size)
     {

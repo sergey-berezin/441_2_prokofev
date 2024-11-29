@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 namespace lib;
+using Newtonsoft.Json;
 
 public class Population
 {
+    private ManualResetEventSlim pauseEvent = new ManualResetEventSlim(true);
     private static object lockObject = new object();
     public int numEpoch { get; set; }
     public Genom[] genArray { get; set; }
@@ -13,7 +15,10 @@ public class Population
     public int resultsolution = -1;
     public int learningRate = 0;
     public int numPopulation;
+<<<<<<< HEAD
+=======
     public bool loop = false;
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
 
     /// <summary>
     /// Эта функция создает популяию
@@ -41,6 +46,23 @@ public class Population
         }
         bestGen = genArray[this.CalculateSolutionsLenght()];
         this.numPopulation = numPopulation;
+<<<<<<< HEAD
+=======
+    }
+
+    [JsonConstructor]
+    public Population(int numEpoch, Genom[] genArray, Genom bestGen, List<int> genomsresult, int[][] WayLengMap, int resultsolution, int learningRate, int numPopulation, bool loop)
+    {
+        this.numEpoch = numEpoch;
+        this.genArray = genArray;
+        this.bestGen = bestGen;
+        this.genomsresult = genomsresult;
+        this.WayLengMap = WayLengMap;
+        this.resultsolution = resultsolution;
+        this.learningRate = learningRate;
+        this.numPopulation = numPopulation;
+        this.loop = loop;
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
     }
 
     public int CalculateSolutionsLenght()
@@ -69,6 +91,10 @@ public class Population
         {
             this.MutateRandomGen();
         }
+<<<<<<< HEAD
+        this.CalculateSolutionsLenght();
+=======
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
         numEpoch += 1;
         return numEpoch;
 
@@ -79,16 +105,31 @@ public class Population
         return $"population number {numPopulation}: Epoch: {numEpoch}, best result is: {this.resultsolution} at genom\n {this.bestGen}\n";
     }
 
+<<<<<<< HEAD
+    public void StartPopulationEvolution(ref Genom outputGenom)
+    {
+        this.CalculateSolutionsLenght();
+        resultsolution = this.genomsresult.Min();
+        bool loop = false;
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            loop = true;
+        };
+=======
     public void StartPopulationEvolution(Action<Genom> callback, CancellationToken token)
     {
+
         Debug.WriteLine($"start {numPopulation}");
         int ind_best_gen = this.CalculateSolutionsLenght();
         resultsolution = this.genomsresult.Min();
         bestGen = genArray[ind_best_gen].ClonePopulation();
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
         Console.WriteLine(this.GetEpochResult());
         Debug.WriteLine($"work full start {numPopulation}");
         while (true)
         {
+            pauseEvent.Wait();
             if (token.IsCancellationRequested)
             {
                 Debug.WriteLine("DEAD");
@@ -96,8 +137,12 @@ public class Population
             }
 
             this.GenNewEpoch();
+<<<<<<< HEAD
+            if(resultsolution > this.genomsresult.Min())
+=======
             ind_best_gen = this.CalculateSolutionsLenght();
             if (resultsolution > this.genomsresult.Min())
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
             {
                 lock (lockObject)
                 {
@@ -105,8 +150,17 @@ public class Population
                     callback(genArray[ind_best_gen]);
                 }
                 resultsolution = this.genomsresult.Min();
+<<<<<<< HEAD
+            }
+            if (outputGenom.CalculateGenomWayLenght(WayLengMap) > this.genomsresult.Min())
+            {
+                resultsolution = this.genomsresult.Min();
+                outputGenom = this.genArray[genomsresult.IndexOf(resultsolution)].ClonePopulation();
+                Console.WriteLine(this.GetEpochResult());
+=======
                 bestGen = genArray[ind_best_gen].ClonePopulation();
                 Debug.WriteLine(this.GetEpochResult());
+>>>>>>> 82231f1d06c3d43fdbda24e649b87ced2096f27f
             }
         }
     }
@@ -129,5 +183,17 @@ public class Population
     private void MutateRandomGen()
     {
         genArray[new Random().Next(0, genArray.Length)].GenomMutation();
+    }
+    public void Pause()
+    {
+        if(pauseEvent.IsSet)
+        {
+            pauseEvent.Reset();
+        }    
+    }
+
+    public void Resume()
+    {
+        pauseEvent.Set();
     }
 }
